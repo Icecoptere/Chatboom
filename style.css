@@ -1,7 +1,36 @@
 html, body {
     margin: 0;
     padding: 0;
+    overflow:hidden;
 }
-canvas {
-    display: block;
+
+@font-face {
+    font-family: 'font1';
+    src: url('assets/OverpassMono-SemiBold.ttf') format('woff2');
 }
+
+@font-face {
+    font-family: 'font2';
+    src: url('assets/MessinaSansMonoTrial-Black.otf') format('woff2');
+}
+
+#messageContainer{
+    width: 350px;
+}
+
+.message{
+    position:absolute;
+}
+
+.user{
+    font-family: 'font2';
+    padding-right: 14px;
+    padding-left: 14px;
+    display: inline;
+}
+
+.messageText{
+    font-family: 'font1';
+    display: inline;
+}
+

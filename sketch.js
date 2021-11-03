@@ -1,4 +1,5 @@
 
+/*
 let listeMessages = [];
 
 let width = 1200;
@@ -19,9 +20,6 @@ function breakMessage(leMessage){
     return leMessageOut;
 }
 
-function createNewMessage(utilisateur,couleur, leMessage){
-    listeMessages.push(new Message(utilisateur,couleur,leMessage));
-}
 
 function setup() {
     createCanvas(width, height);
@@ -90,7 +88,7 @@ class Message {
 }
 
 function draw() {
-    background(220);
+    //background(220);
     clear();
     for(let i=0; i<listeMessages.length; i++){
         listeMessages[i].show();
@@ -100,11 +98,47 @@ function draw() {
         }
     }
 }
+*/
 
+function createNewMessage(utilisateur,couleur, leMessage){
+    if(couleur === null) {
+        couleur = "#"+Math.floor(Math.random()*16777215).toString(16);
+    }
+    console.log(utilisateur + " : " + leMessage);
+    let container = document.querySelector("#messageContainer");
+    let messageDiv = document.createElement("div");
+    messageDiv.classList.add("message");
+    let userText = document.createElement("div");
+    userText.classList.add("user");
+    userText.style.color = couleur;
+    userText.textContent = utilisateur;
+    let newText = document.createElement("div");
+    newText.classList.add("messageText");
+    newText.style.color = couleur;
+    newText.textContent = leMessage;
+    messageDiv.appendChild(userText);
+    messageDiv.appendChild(newText);
+    container.appendChild(messageDiv);
+    return messageDiv;
+}
+
+/*
+function laSuite(element){
+    let value = window.innerHeight;
+    let timeIntervalMessage = setInterval(()=> {
+        element.style.top = value+"px";
+        value -= 1;
+        if(value+element.clientHeight <= 0 ){
+            clearInterval(timeIntervalMessage);
+            element.remove();
+        }
+    }, 10);
+}
+ */
 
 //Part connected to twitch chat
 
-let nomChaine = "icecoptered";
+let nomChaine = "ponce";
 
 const params = new URLSearchParams(window.location.search);
 const channel = params.get('channel') || nomChaine.toLowerCase();
@@ -117,11 +151,43 @@ const client = new tmi.Client({
 });
 
 client.connect();
+let listeMessage = [];
 
 client.on('message', (wat, tags, message, self) => {
-    console.log(wat);
-    console.log(tags);
-    console.log(message);
     if (self) return;
-    createNewMessage(tags['display-name'],tags['color'], message);
+    listeMessage.push({tags,message});
+    //.getBoundingClientRect
 });
+
+function map(x, in_min, in_max, out_min,out_max) {
+    return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
+
+function render() {
+    let messages = document.getElementsByClassName("message");
+
+    for(let i=0; i<messages.length; i++){
+        let m = messages[i];
+        let pY = parseFloat(m.style.top);
+        if(isNaN(pY)){
+            pY = window.innerHeight;
+        }
+        pY -= 1;
+        m.style.top =pY+"px";
+        m.style.opacity = map(pY,window.innerHeight/2,0,1,0);
+        if(pY < -m.clientHeight){
+            m.remove();
+        }
+    }
+
+    let lastM = messages[messages.length-1];
+    if(listeMessage.length>0 && (messages.length === 0 || parseFloat(lastM.style.top) < window.innerHeight-lastM.clientHeight-10)){
+        let data = listeMessage.shift();
+        console.log(data);
+        createNewMessage(data.tags['display-name'],data.tags['color'], data.message);
+    }
+
+    requestAnimationFrame(_=> render());
+}
+
+render();
