@@ -138,7 +138,7 @@ function laSuite(element){
 
 //Part connected to twitch chat
 
-let nomChaine = "ponce";
+let nomChaine = "icecoptered";
 
 const params = new URLSearchParams(window.location.search);
 const channel = params.get('channel') || nomChaine.toLowerCase();
@@ -172,9 +172,9 @@ function render() {
         if(isNaN(pY)){
             pY = window.innerHeight;
         }
-        pY -= 1;
+        pY -= 2;
         m.style.top =pY+"px";
-        m.style.opacity = map(pY,window.innerHeight/2,0,1,0);
+        m.style.opacity = map(pY,window.innerHeight*0.6,window.innerHeight*0.5,1,0);
         if(pY < -m.clientHeight){
             m.remove();
         }
